@@ -1,13 +1,13 @@
 # Board Control
 
-*Use HttpFeedback to send POST messages and take actions on it*
+*Use WebEx Board Event Actions to send PUT messages and take actions on them*
 
 ---
 
 **ToDo's:**
 
- - Push config to WebEx board to setup the xCommand instead of having
-    a user do it through a different interface
+ - Setup feedback back to board to change Toggle Power button color to
+   something like red when the plug is on and gray when it is off
 
  - Try this with another web-controlled plug
 
@@ -20,13 +20,17 @@ in my basement office. I have a small space heater to keep the room warm,
 but the heater is a little noisy. I got tired of manually turning the heater
 on and off every time a call came in.
 
-I wrote this middleware to take HttpFeedback information from the WebEx
+I wrote this middleware to take HTTP PUT information from the WebEx
 Board and turn off the plug if it's on, and turn the plug back on when
 the call is over.
 
+Version 1.0 uses a macro on the WebEx board instead of HttpFeedback
+
 ## Features
 
- - Turn on and off a TP-Link plug based on call status
+ - Turn on and off a TP-Link Kasa plug based on call status
+
+ - Toggle button for Touch10 control of the plug.
 
  - Call from an existing web server or run stand-alone
 
@@ -36,13 +40,15 @@ This uses Python 3.x for the code of the application. Other packages:
 
  - nginx - I already had a web server at my house, so the WebEx Board sends
    commands to nginx which routes the data to Flask
- - dictor - a Python library to easily parse JSON
  - pyHS100 - a Python library for controlling TP-LINK Kasa plugs
+ - Webex Board Macro Editor
+ - Webex Board UI Extensions Editor
 
 **Cisco Products & Services:**
 
 This was designed with a WebEx Board 55. I expect this will work with any
-WebEx-registered endpoint such as a RoomKit, DX80, etc.
+WebEx-registered endpoint such as a RoomKit, DX80, etc. The toggle button
+integration should work with any device that has a Touch10
 
 **Third-Party Products & Services:**
 
@@ -62,18 +68,19 @@ For testing, start the app with: board_control.py
 This runs in as a webapp listening on localhost port 6000. This lets the
 app be called only from a web server already on the device. If you want
 this to run on a different IP and port, change HOSTIP and HOSTPORT, and
-make sure your xCommand points to the right IP address and port.
+make sure your URL setting in the Board macro points to the right IP
+address and port.
 
 For starting at boot time, you can create your own startup script or use
 pm2 (a javascript process manager app that works with both JS and Python)
 
 ## Installation
 
-You must have admin access to your WebEx device. Use the following xCommand,
-but substitute your server that will be running this app:
-  - xCommand HttpFeedback Register FeedbackSlot:1 ServerUrl:http://192.168.255.101/board format:json expression[1]:/Status/Call/AnswerState
+ - You must have admin access to your WebEx device.
 
-You can also use a different FeedbackSlot if 1 is already in use
+ - Import the button XML with the UI editor. Customize as necessary
+
+ - Import the macro JS with the Macro Editor. Customize as necessary
 
 Clone the board control repo. After cloning, do:
 
